@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HelpDesk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <h2>🎫 Mesa de Ayuda - Tickets</h2>
+
+    <a href="{% url 'crear_ticket' %}" class="btn btn-primary mb-3">
+        + Crear Ticket
+    </a>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Sede</th>
+                <th>Categoría</th>
+                <th>Subcategoría</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for t in tickets %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.usuario.username }}</td>
+                <td>{{ t.sede.nombre }}</td>
+                <td>{{ t.categoria.nombre }}</td>
+                <td>{{ t.subcategoria.nombre }}</td>
+
+                <td>
+                    {% if t.prioridad == 'P1' %}
+                        <span class="badge bg-danger">P1</span>
+                    {% elif t.prioridad == 'P2' %}
+                        <span class="badge bg-warning text-dark">P2</span>
+                    {% elif t.prioridad == 'P3' %}
+                        <span class="badge bg-info text-dark">P3</span>
+                    {% else %}
+                        <span class="badge bg-success">P4</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <span class="badge bg-secondary">
+                        {{ t.estado }}
+                    </span>
+                </td>
+
+                <td>{{ t.fecha_creacion }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

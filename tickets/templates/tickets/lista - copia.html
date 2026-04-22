@@ -1,0 +1,40 @@
+<h1>Tickets</h1>
+
+<a href="{% url 'crear_ticket' %}">Crear Ticket</a>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Sede</th>
+        <th>Categoría</th>
+        <th>Subcategoría</th>
+		<th>Prioridad</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+    </tr>
+
+    {% for t in tickets %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.usuario.username }}</td>
+        <td>{{ t.sede.nombre }}</td>
+        <td>{{ t.categoria.nombre }}</td>
+        <td>{{ t.subcategoria.nombre }}</td>
+		<!-- NUEVO -->
+		<td>
+			{% if t.prioridad|upper == 'P1' %}
+				<span style="color:red; font-weight:bold;">P1</span>
+			{% elif t.prioridad|upper == 'P2' %}
+				<span style="color:orange;">P2</span>
+			{% elif t.prioridad|upper == 'P3' %}
+				<span style="color:gold;">P3</span>
+			{% else %}
+				<span style="color:green;">P4</span>
+			{% endif %}
+		</td>
+        <td>{{ t.estado }}</td>
+        <td>{{ t.fecha_creacion }}</td>
+    </tr>
+    {% endfor %}
+</table>
