@@ -77,9 +77,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 import dj_database_url
+import os
 
 DATABASES = {
-    'default': dj_database_url.parse('postgresql://dbhelpdesk_user:Kq0t7rw5dRpO9OEJYUbLuXPexSNwSSuH@dpg-d7kk46v7f7vs73av28o0-a/dbhelpdesk')
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 
