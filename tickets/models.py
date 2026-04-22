@@ -61,8 +61,8 @@ class Ticket(models.Model):
     
     estado = models.CharField(max_length=20, choices=ESTADOS, default='abierto')
 
-    impacto = models.CharField(max_length=10, choices=IMPACTO)
-    urgencia = models.CharField(max_length=10, choices=URGENCIA)
+    impacto = models.CharField(max_length=10, choices=IMPACTO, null=True, blank=True)
+    urgencia = models.CharField(max_length=10, choices=URGENCIA, null=True, blank=True)
 
     tecnico = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='tickets_asignados')
 
