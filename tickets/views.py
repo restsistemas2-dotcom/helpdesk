@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 from .models import Ticket
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+
 
 @login_required
 def lista_tickets(request):
@@ -70,10 +73,7 @@ def crear_ticket(request):
         )
         return redirect('lista_tickets')
     
-def crear_admin(request):
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@test.com', 'admin123')
-    return HttpResponse("Admin creado")
+
    
     # ESTO ES LO NUEVO
     sedes = Sede.objects.all()
@@ -85,5 +85,10 @@ def crear_admin(request):
         'categorias': categorias,
         'subcategorias': subcategorias
     })
+
+def crear_admin(request):
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@test.com', 'admin123')
+    return HttpResponse("Admin creado")
 
 # Create your views here.
