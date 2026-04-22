@@ -86,14 +86,7 @@ def crear_ticket(request):
         'subcategorias': subcategorias
     })
 
-def crear_admin(request):
-    user, created = User.objects.get_or_create(username='admin')
-    user.email = 'admin@test.com'
-    user.set_password('Admin12345')  # 👈 CLAVE
-    user.is_staff = True
-    user.is_superuser = True
-    user.save()
-    
-    return HttpResponse("Admin listo")
+def crear_admin(request):    
+    return HttpResponse("OK FUNCIONANDO")
 
 # Create your views here.
