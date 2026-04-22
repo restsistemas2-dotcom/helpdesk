@@ -86,7 +86,9 @@ def crear_ticket(request):
         'subcategorias': subcategorias
     })
 
-def crear_admin(request):    
-    return HttpResponse("OK FUNCIONANDO")
+def crear_admin(request):
+    User.objects.filter(username='admin').delete()
+    User.objects.create_superuser('admin', 'admin@test.com', 'Admin12345')
+    return HttpResponse("Admin creado")
 
 # Create your views here.
