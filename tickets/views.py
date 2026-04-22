@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from .models import Ticket
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -87,8 +87,13 @@ def crear_ticket(request):
     })
 
 def crear_admin(request):
-    User.objects.filter(username='admin').delet()
-    User.objects.create_superuser('admin', 'admin@test.com', 'Admin12345')
-    return HttpResponse("Admin recreado correctamente")
+    user, created = User.objects.get_or_create(username='admin')
+    user.email = 'admin@test.com'
+    user.set_password('Admin12345')  # 👈 CLAVE
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    
+    return HttpResponse("Admin listo")
 
 # Create your views here.
