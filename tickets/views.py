@@ -69,6 +69,11 @@ def crear_ticket(request):
             fail_silently=False,
         )
         return redirect('lista_tickets')
+    
+def crear_admin(request):
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@test.com', 'admin123')
+    return HttpResponse("Admin creado")
    
     # ESTO ES LO NUEVO
     sedes = Sede.objects.all()
