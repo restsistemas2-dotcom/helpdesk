@@ -28,15 +28,15 @@ class TicketAdmin(admin.ModelAdmin):
         'solucion',  # AGREGAR ESTO
     )
     def save_model(self, request, obj, form, change):
-    if obj.estado == 'cerrado' and not obj.solucion:
-        raise ValidationError("Debes ingresar una solución para cerrar el ticket.")
+        if obj.estado == 'cerrado' and not obj.solucion:
+            raise ValidationError("Debes ingresar una solución para cerrar el ticket.")
     
-    super().save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
     
     def get_readonly_fields(self, request, obj=None):
-    if obj and obj.estado == 'cerrado':
-        return ()
-    return ('solucion',)
+        if obj and obj.estado == 'cerrado':
+            return ()
+        return ('solucion',)
     
 # Inline para Perfil dentro de User
 class PerfilInline(admin.StackedInline):
