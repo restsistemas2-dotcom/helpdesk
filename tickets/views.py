@@ -13,7 +13,10 @@ from .models import Categoria
 
 @login_required
 def dashboard(request):
-    perfil = request.user.perfil
+    perfil = getattr(request.user, 'perfil', None)
+    
+    if not perfil:
+        return redirect('login')
 
     tickets = Ticket.objects.filter(sede=perfil.sede)
 

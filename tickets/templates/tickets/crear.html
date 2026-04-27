@@ -69,6 +69,7 @@
 
 <div class="top-bar">
     Usuario: {{ request.user.username }}
+	<a href="{% url 'dashboard' %}">Dashboard</a>
     <a href="{% url 'logout' %}">Cerrar sesión</a>
 </div>
 
