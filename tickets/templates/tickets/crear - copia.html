@@ -1,0 +1,49 @@
+<h1>Crear Ticket</h1>
+
+{% extends 'base.html' %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Sede:</label>
+    <select name="sede">
+        {% for s in sedes %}
+            <option value="{{ s.id }}">{{ s.nombre }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Categoría:</label>
+    <select name="categoria">
+        {% for c in categorias %}
+            <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Subcategoría:</label>
+    <select name="subcategoria">
+        {% for sc in subcategorias %}
+            <option value="{{ sc.id }}">{{ sc.nombre }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Descripción:</label>
+    <textarea name="descripcion"></textarea><br>
+
+    <label>Impacto:</label>
+    <select name="impacto">
+        <option value="bajo">Bajo</option>
+        <option value="medio">Medio</option>
+        <option value="alto">Alto</option>
+    </select><br>
+
+    <label>Urgencia:</label>
+    <select name="urgencia">
+        <option value="baja">Baja</option>
+        <option value="media">Media</option>
+        <option value="alta">Alta</option>
+    </select><br>
+
+    <button type="submit">Guardar</button>
+</form>
+{% endblock %}

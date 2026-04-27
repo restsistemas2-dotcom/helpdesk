@@ -1,49 +1,117 @@
-<h1>Crear Ticket</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Ticket</title>
 
-{% extends 'base.html' %}
-{% block content %}
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
 
-<form method="post">
-    {% csrf_token %}
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 
-    <label>Sede:</label>
-    <select name="sede">
-        {% for s in sedes %}
-            <option value="{{ s.id }}">{{ s.nombre }}</option>
-        {% endfor %}
-    </select><br>
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    <label>Categoría:</label>
-    <select name="categoria">
-        {% for c in categorias %}
-            <option value="{{ c.id }}">{{ c.nombre }}</option>
-        {% endfor %}
-    </select><br>
+        label {
+            font-weight: bold;
+        }
 
-    <label>Subcategoría:</label>
-    <select name="subcategoria">
-        {% for sc in subcategorias %}
-            <option value="{{ sc.id }}">{{ sc.nombre }}</option>
-        {% endfor %}
-    </select><br>
+        select, textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-    <label>Descripción:</label>
-    <textarea name="descripcion"></textarea><br>
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-    <label>Impacto:</label>
-    <select name="impacto">
-        <option value="bajo">Bajo</option>
-        <option value="medio">Medio</option>
-        <option value="alto">Alto</option>
-    </select><br>
+        button:hover {
+            background: #1e3c72;
+        }
 
-    <label>Urgencia:</label>
-    <select name="urgencia">
-        <option value="baja">Baja</option>
-        <option value="media">Media</option>
-        <option value="alta">Alta</option>
-    </select><br>
+        .top-bar {
+            background: #2a5298;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
 
-    <button type="submit">Guardar</button>
-</form>
-{% endblock %}
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    Usuario: {{ request.user.username }}
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+</div>
+
+<div class="container">
+    <h2>Crear Ticket</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Categoría</label>
+        <select name="categoria">
+            {% for c in categorias %}
+                <option value="{{ c.id }}">{{ c.nombre }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Subcategoría</label>
+        <select name="subcategoria">
+            {% for s in subcategorias %}
+                <option value="{{ s.id }}">{{ s.nombre }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Impacto</label>
+        <select name="impacto">
+            <option>Alto</option>
+            <option>Medio</option>
+            <option>Bajo</option>
+        </select>
+
+        <label>Urgencia</label>
+        <select name="urgencia">
+            <option>Alta</option>
+            <option>Media</option>
+            <option>Baja</option>
+        </select>
+
+        <label>Descripción</label>
+        <textarea name="descripcion"></textarea>
+
+        <button type="submit">Crear Ticket</button>
+    </form>
+</div>
+
+</body>
+</html>
