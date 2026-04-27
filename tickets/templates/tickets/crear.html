@@ -80,13 +80,15 @@
 
         <label>Categoría</label>
         <select name="categoria" id="categoria">
+			<option value="" disabled selected>Seleccione categoría</option>
+			
             {% for c in categorias %}
                 <option value="{{ c.id }}">{{ c.nombre }}</option>
             {% endfor %}
         </select>
 
         <label>Subcategoría</label>
-		<select name="subcategoria" id="subcategoria" required>
+		<select name="subcategoria" id="subcategoria">
 			<option value="">Seleccione una categoría primero</option>
 		</select>
 
@@ -100,24 +102,42 @@
     </form>
 </div>
 <script>
-document.getElementById('categoria').addEventListener('change', function () {
-    let categoriaId = this.value;
+document.addEventListener('DOMContentLoaded', function () {
 
-	subcategoriaSelect.innerHTML = '<option>Cargando...</option>';
+    const categoriaSelect = document.getElementById('categoria');
+    const subcategoriaSelect = document.getElementById('subcategoria');
 
-    fetch(`/ajax/subcategorias/?categoria_id=${categoriaId}`)
-        .then(response => response.json())
-        .then(data => {
-            let subcategoriaSelect = document.getElementById('subcategoria');
-            subcategoriaSelect.innerHTML = '';
+    function cargarSubcategorias() {
+        let categoriaId = categoriaSelect.value;
+		
+		if (!categoriaId) {
+			subcategoriaSelect.innerHTML = '<option>Seleccione categoría primero</option>';
+			return;
+		}	
 
-            data.forEach(function (item) {
-                let option = document.createElement('option');
-                option.value = item.id;
-                option.text = item.nombre;
-                subcategoriaSelect.appendChild(option);
+        subcategoriaSelect.innerHTML = '<option>Cargando...</option>';
+
+        fetch(`/ajax/subcategorias/?categoria_id=${categoriaId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                subcategoriaSelect.innerHTML = '<option value="">Seleccione</option>';
+
+                data.forEach(function (item) {
+                    let option = document.createElement('option');
+                    option.value = item.id;
+                    option.text = item.nombre;
+                    subcategoriaSelect.appendChild(option);
+                });
             });
-        });
+    }
+
+    // 🔥 cuando cambia
+    categoriaSelect.addEventListener('change', cargarSubcategorias);
+
+    // 🔥 cuando carga la página (LA CLAVE)
+    cargarSubcategorias();
+
 });
 </script>
 </body>
