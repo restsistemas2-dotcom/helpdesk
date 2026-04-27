@@ -68,10 +68,9 @@
 <body>
 
 <div class="top-bar">
-    Usuario: {{ request.user.username }}
-	{% if request.user.is_staff %}
-		<a href="{% url 'dashboard' %}" class="btn-dashboard">📊 Dashboard</a>
-	{% endif %}
+   Usuario: {{ request.user.username }}
+	<a href="{% url 'dashboard' %}" class="btn-dashboard">📊 Dashboard</a>
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
 </div>
 		<style>
 		.btn-dashboard {
