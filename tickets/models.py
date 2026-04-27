@@ -28,8 +28,9 @@ class Categoria(models.Model):
 
 # Subcategorías
 class Subcategoria(models.Model):
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    
 
     def __str__(self):
         return f"{self.categoria} - {self.nombre}"
