@@ -17,7 +17,10 @@ from datetime import timedelta
 
 from .models import Ticket
 
-@login_required
+def es_admin(user):
+    return user.is_staff
+    
+@user_passes_test(es_admin)
 def dashboard(request):
     perfil = getattr(request.user, 'perfil', None)
 
@@ -60,9 +63,6 @@ def dashboard(request):
         'no_cumple': no_cumple,
     })
 
-def es_admin(user):
-    return user.is_staff
-    
 @login_required
 def lista_tickets(request):
     perfil, created = Perfil.objects.get_or_create(user=request.user)

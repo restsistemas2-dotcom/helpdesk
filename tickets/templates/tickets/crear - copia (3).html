@@ -69,30 +69,23 @@
 
 <div class="top-bar">
     Usuario: {{ request.user.username }}
-	{% if request.user.is_staff %}
-		<a href="{% url 'dashboard' %}" class="btn-dashboard">📊 Dashboard</a>
-	{% endif %}="{% url 'logout' %}">Cerrar sesión</a>
+	<a href="{% url 'dashboard' %}" class="btn-dashboard">📊 Dashboard</a>
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
 </div>
-{% extends "admin/base.html" %}
+	<style>
+	.btn-dashboard {
+		background: #28a745;
+		color: white;
+		padding: 8px 15px;
+		border-radius: 5px;
+		text-decoration: none;
+		margin-left: 10px;
+	}
 
-{% block branding %}
-<h1 id="site-name">
-    HelpDesk Admin
-</h1>
-
-<div style="margin-top:10px;">
-    <a href="/dashboard/" style="
-        background:#28a745;
-        color:white;
-        padding:6px 12px;
-        border-radius:5px;
-        text-decoration:none;
-        font-size:14px;
-    ">
-        📊 Ver Dashboard
-    </a>
-</div>
-{% endblock %}/style>
+	.btn-dashboard:hover {
+		background: #218838;
+	
+	</style>
 
 <div class="container">
     <h2>Crear Ticket</h2>
