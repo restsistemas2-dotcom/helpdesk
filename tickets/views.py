@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Subcategoria
 from .models import Categoria
+from .models import Perfil
 
 @login_required
 def dashboard(request):

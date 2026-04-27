@@ -10,8 +10,8 @@ urlpatterns = [
     path('', auth_views.LoginView.as_view(template_name='tickets/login.html'), name='login'),
     path('tickets/', views.lista_tickets, name='lista_tickets'),
     path('crear/', views.crear_ticket, name='crear_ticket'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('ajax/subcategorias/', views.cargar_subcategorias, name='cargar_subcategorias'),
     path('crear-admin/', crear_admin),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('dashboard/', views.dashboard, name='dashboard'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
