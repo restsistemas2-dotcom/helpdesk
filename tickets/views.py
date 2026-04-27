@@ -38,7 +38,8 @@ def es_admin(user):
     
 @login_required
 def lista_tickets(request):
-    perfil = request.user.perfil
+    perfil, created = Perfil.objects.get_or_create(user=request.user)
+    
     tickets = Ticket.objects.filter(sede=perfil.sede).order_by('-fecha_creacion')
 
     return render(request, 'tickets/lista.html', {'tickets': tickets})

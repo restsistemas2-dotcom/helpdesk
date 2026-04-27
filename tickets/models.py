@@ -89,7 +89,12 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.contrib.auth.models import User
-       
+
+@receiver(post_save, sender=User)
+def crear_perfil_usuario(sender, instance, created, **kwargs):
+    if created:
+        Perfil.objects.create(user=instance)
+        
 @receiver(post_save, sender=Ticket)
 def enviar_correo_cierre(sender, instance, created, **kwargs):
     
