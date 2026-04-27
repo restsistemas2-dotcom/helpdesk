@@ -4,7 +4,8 @@ from django.contrib.auth.admin import UserAdmin
 from .models import Perfil
 from .models import Sede, Categoria, Subcategoria, Ticket
 from django.core.exceptions import ValidationError
-
+from django.urls import path
+from django.shortcuts import redirect
     
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
@@ -38,7 +39,24 @@ class TicketAdmin(admin.ModelAdmin):
         if obj and obj.estado == 'cerrado':
             return ()
         return ('solucion',)
-    
+
+class CustomAdminSite(admin.AdminSite):
+    site_header = "HelpDesk Admin"
+    site_title = "HelpDesk"
+    index_title = "Panel de administración"
+
+    def get_urls(self):
+        urls = super().get_urls()
+
+        custom_urls = [
+            path('dashboard/', self.admin_view(self.ver_dashboard))
+        ]
+
+        return custom_urls + urls
+
+    def ver_dashboard(self, request):
+        return redirect('/dashboard/') 
+ 
 # Inline para Perfil dentro de User
 class PerfilInline(admin.StackedInline):
     model = Perfil
@@ -49,10 +67,12 @@ class PerfilInline(admin.StackedInline):
 class CustomUserAdmin(UserAdmin):
     inlines = (PerfilInline,)
     
-admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
-admin.site.register(Sede)
-admin.site.register(Categoria)
-admin.site.register(Subcategoria)
+admin_site = CustomAdminSite(name='custom_admin')
+    
+admin_site.register(Ticket)
+admin_site.register(Sede)
+admin_site.register(Categoria)
+admin_site.register(Subcategoria)
+admin_site.register(User, CustomUserAdmin)
 
 # Register your models here.

@@ -61,6 +61,16 @@
             <h3>Cerrados</h3>
             <h1>{{ cerrados }}</h1>
         </div>
+		
+		<div class="kpis">
+        <h3>Total Tickets: {{ total_tickets }}</h3>
+        <h3>Abiertos: {{ abiertos }}</h3>
+        <h3>Cerrados: {{ cerrados }}</h3>
+
+        <!-- AQUÍ -->
+        <h3>SLA Cumplido: {{ cumple_sla }}</h3>
+        <h3>SLA Incumplido: {{ no_cumple }}</h3>
+		</div>
     </div>
 
     <canvas id="graficoPrioridad"></canvas>

@@ -11,15 +11,64 @@ from django.http import JsonResponse
 from .models import Subcategoria
 from .models import Categoria
 from .models import Perfil
+from django.db.models import F, ExpressionWrapper, DurationField
+from django.utils import timezone
+from datetime import timedelta
+
+from .models import Ticket, Perfil
 
 @login_required
 def dashboard(request):
     perfil = getattr(request.user, 'perfil', None)
-    
+
     if not perfil:
         return redirect('login')
 
     tickets = Ticket.objects.filter(sede=perfil.sede)
+
+    # KPIs básicos
+    total_tickets = tickets.count()
+    abiertos = tickets.filter(estado='abierto').count()
+    cerrados = tickets.filter(estado='cerrado').count()
+
+    # SOLO tickets cerrados
+    tickets_cerrados = tickets.filter(estado='cerrado', fecha_cierre__isnull=False)
+
+    # Tiempo de resolución = fecha_cierre - fecha_creacion
+    tickets_con_tiempo = tickets_cerrados.annotate(
+        tiempo_resolucion=ExpressionWrapper(
+            F('fecha_cierre') - F('fecha_creacion'),
+            output_field=DurationField()
+        )
+    )
+
+    # SLA = 24 horas
+    SLA_HORAS = 24
+
+    cumple_sla = tickets_con_tiempo.filter(
+        tiempo_resolucion__lte=timedelta(hours=SLA_HORAS)
+    ).count()
+
+    no_cumple = tickets_con_tiempo.filter(
+        tiempo_resolucion__gt=timedelta(hours=SLA_HORAS)
+    ).count()
+
+    return render(request, 'tickets/dashboard.html', {
+        'total_tickets': total_tickets,
+        'abiertos': abiertos,
+        'cerrados': cerrados,
+        'cumple_sla': cumple_sla,
+        'no_cumple': no_cumple,
+    })
+    
+for t in tickets:
+    if t.fecha_cierre:
+        horas = (t.fecha_cierre - t.fecha_creacion).total_seconds() / 3600
+
+        if horas <= 24:
+            cumple_sla += 1
+        else:
+            no_cumple += 1
 
     total = tickets.count()
     abiertos = tickets.filter(estado='abierto').count()
