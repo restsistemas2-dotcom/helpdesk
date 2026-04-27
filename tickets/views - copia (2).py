@@ -22,9 +22,19 @@ def crear_ticket(request):
         
         categoria_id = request.POST.get('categoria')
         
-        impacto = request.POST.get('impacto').lower()
-        urgencia = request.POST.get('urgencia').lower()
+        # TOMAR DATOS DEL FORMULARIO
+        impacto = request.POST.get('impacto')
+        urgencia = request.POST.get('urgencia')
 
+        impacto = impacto.lower()
+        urgencia = urgencia.lower()
+    
+        # (OPCIONAL) lógica por categoría
+        if categoria_id == '1':
+            pass  # o alguna regla especial
+            
+        print("Impacto recibido:", impacto)
+        print("Urgencia recibida:", urgencia)
         # Prioridad tipo ITIL
         if impacto == 'alto' and urgencia == 'alta':
             prioridad = 'P1'
@@ -41,17 +51,19 @@ def crear_ticket(request):
         
         Ticket.objects.create(
             usuario=request.user,
-            sede=perfil.sede,
+            sede=perfil.sede,  # automático
             categoria_id=int(categoria_id),
             subcategoria_id=int(request.POST.get('subcategoria')),
             descripcion=request.POST.get('descripcion'),
             impacto=impacto,
             urgencia=urgencia,
-            prioridad=prioridad,
+            prioridad=prioridad.upper(),
         )
         
-        sede = perfil.sede
+        # 2. Obtener la sede
+        sede = Sede.objects.get(id=request.POST.get('sede'))
 
+        # 3. Enviar correo
         send_mail(
             'Nuevo Ticket Creado',
             f'Se ha creado un ticket:\n\n'
@@ -63,17 +75,10 @@ def crear_ticket(request):
             ['emontenegro@100montaditosca.com', sede.correo],
             fail_silently=False,
         )
-
         return redirect('lista_tickets')
-
-    categorias = Categoria.objects.all()
-    subcategorias = Subcategoria.objects.all()
-
-    return render(request, 'tickets/crear.html', {
-        'categorias': categorias,
-        'subcategorias': subcategorias
-    })
     
+
+   
     # ESTO ES LO NUEVO
     sedes = Sede.objects.all()
     categorias = Categoria.objects.all()
