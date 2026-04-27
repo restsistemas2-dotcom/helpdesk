@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from .models import Perfil, Sede, Categoria, Subcategoria, Ticket
 from django.core.exceptions import ValidationError
+from django.urls import path
+from django.shortcuts import redirect
 
 
 @admin.register(Ticket)
@@ -50,3 +52,10 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Sede)
 admin.site.register(Categoria)
 admin.site.register(Subcategoria)
+
+def dashboard_redirect(request):
+    return redirect('/dashboard/')
+
+admin.site.get_urls = lambda: [
+    path('dashboard/', dashboard_redirect)
+] + admin.site.get_urls()
