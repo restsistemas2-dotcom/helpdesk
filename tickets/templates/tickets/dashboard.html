@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .total { background: #2a5298; }
+        .abiertos { background: #e67e22; }
+        .cerrados { background: #27ae60; }
+
+        canvas {
+            margin-top: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>📊 Dashboard ITSM</h2>
+
+    <div class="cards">
+        <div class="card total">
+            <h3>Total</h3>
+            <h1>{{ total }}</h1>
+        </div>
+
+        <div class="card abiertos">
+            <h3>Abiertos</h3>
+            <h1>{{ abiertos }}</h1>
+        </div>
+
+        <div class="card cerrados">
+            <h3>Cerrados</h3>
+            <h1>{{ cerrados }}</h1>
+        </div>
+    </div>
+
+    <canvas id="graficoPrioridad"></canvas>
+
+</div>
+
+<script>
+    const data = {
+        labels: [
+            {% for item in por_prioridad %}
+                "{{ item.prioridad }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Tickets por Prioridad',
+            data: [
+                {% for item in por_prioridad %}
+                    {{ item.total }},
+                {% endfor %}
+            ]
+        }]
+    };
+
+    new Chart(document.getElementById('graficoPrioridad'), {
+        type: 'bar',
+        data: data
+    });
+</script>
+
+</body>
+</html>

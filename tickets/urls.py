@@ -13,4 +13,5 @@ urlpatterns = [
     path('ajax/subcategorias/', views.cargar_subcategorias, name='cargar_subcategorias'),
     path('crear-admin/', crear_admin),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

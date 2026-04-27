@@ -3,12 +3,32 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.http import JsonResponse
 from .models import Ticket
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Subcategoria
 from .models import Categoria
+
+@login_required
+def dashboard(request):
+    perfil = request.user.perfil
+
+    tickets = Ticket.objects.filter(sede=perfil.sede)
+
+    total = tickets.count()
+    abiertos = tickets.filter(estado='abierto').count()
+    cerrados = tickets.filter(estado='cerrado').count()
+
+    por_prioridad = tickets.values('prioridad').annotate(total=Count('id'))
+
+    return render(request, 'tickets/dashboard.html', {
+        'total': total,
+        'abiertos': abiertos,
+        'cerrados': cerrados,
+        'por_prioridad': por_prioridad,
+    })
 
 def es_admin(user):
     return user.is_staff
