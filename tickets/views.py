@@ -5,6 +5,9 @@ from .models import Ticket
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse
+from .models import Subcategoria
+
 
 def es_admin(user):
     return user.is_staff
@@ -70,11 +73,9 @@ def crear_ticket(request):
         return redirect('lista_tickets')
 
     categorias = Categoria.objects.all()
-    subcategorias = Subcategoria.objects.all()
 
     return render(request, 'tickets/crear.html', {
         'categorias': categorias,
-        'subcategorias': subcategorias
     })
     
     # ESTO ES LO NUEVO
@@ -92,5 +93,12 @@ def crear_admin(request):
     User.objects.filter(username='admin').delete()
     User.objects.create_superuser('admin', 'admin@test.com', 'Admin12345')
     return HttpResponse("Admin creado")
+    
+def cargar_subcategorias(request):
+    categoria_id = request.GET.get('categoria_id')
+    subcategorias = Subcategoria.objects.filter(categoria_id=categoria_id)
 
+    data = list(subcategorias.values('id', 'nombre'))
+    return JsonResponse(data, safe=False)
+    
 # Create your views here.

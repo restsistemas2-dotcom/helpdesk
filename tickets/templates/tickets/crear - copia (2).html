@@ -79,16 +79,18 @@
         {% csrf_token %}
 
         <label>Categoría</label>
-        <select name="categoria" id="categoria">
+        <select name="categoria">
             {% for c in categorias %}
                 <option value="{{ c.id }}">{{ c.nombre }}</option>
             {% endfor %}
         </select>
 
         <label>Subcategoría</label>
-		<select name="subcategoria" id="subcategoria" required>
-			<option value="">Seleccione una categoría primero</option>
-		</select>
+        <select name="subcategoria">
+            {% for s in subcategorias %}
+                <option value="{{ s.id }}">{{ s.nombre }}</option>
+            {% endfor %}
+        </select>
 
         <label>Impacto</label>
         <select name="impacto">
@@ -110,24 +112,6 @@
         <button type="submit">Crear Ticket</button>
     </form>
 </div>
-<script>
-document.getElementById('categoria').addEventListener('change', function () {
-    let categoriaId = this.value;
 
-    fetch(`/ajax/subcategorias/?categoria_id=${categoriaId}`)
-        .then(response => response.json())
-        .then(data => {
-            let subcategoriaSelect = document.getElementById('subcategoria');
-            subcategoriaSelect.innerHTML = '';
-
-            data.forEach(function (item) {
-                let option = document.createElement('option');
-                option.value = item.id;
-                option.text = item.nombre;
-                subcategoriaSelect.appendChild(option);
-            });
-        });
-});
-</script>
 </body>
 </html>
