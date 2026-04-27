@@ -1,21 +1,21 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.http import JsonResponse
 from .models import Ticket
 from django.db.models import Count
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Subcategoria
 from .models import Categoria
 from .models import Perfil
-from django.db.models import F, ExpressionWrapper, DurationField
 from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.db.models import F, ExpressionWrapper, DurationField
 from datetime import timedelta
 
-from .models import Ticket, Perfil
+from .models import Ticket
 
 @login_required
 def dashboard(request):
@@ -26,15 +26,15 @@ def dashboard(request):
 
     tickets = Ticket.objects.filter(sede=perfil.sede)
 
-    # KPIs básicos
     total_tickets = tickets.count()
     abiertos = tickets.filter(estado='abierto').count()
     cerrados = tickets.filter(estado='cerrado').count()
 
-    # SOLO tickets cerrados
-    tickets_cerrados = tickets.filter(estado='cerrado', fecha_cierre__isnull=False)
+    tickets_cerrados = tickets.filter(
+        estado='cerrado',
+        fecha_cierre__isnull=False
+    )
 
-    # Tiempo de resolución = fecha_cierre - fecha_creacion
     tickets_con_tiempo = tickets_cerrados.annotate(
         tiempo_resolucion=ExpressionWrapper(
             F('fecha_cierre') - F('fecha_creacion'),
@@ -42,15 +42,12 @@ def dashboard(request):
         )
     )
 
-    # SLA = 24 horas
-    SLA_HORAS = 24
-
     cumple_sla = tickets_con_tiempo.filter(
-        tiempo_resolucion__lte=timedelta(hours=SLA_HORAS)
+        tiempo_resolucion__lte=timedelta(hours=24)
     ).count()
 
     no_cumple = tickets_con_tiempo.filter(
-        tiempo_resolucion__gt=timedelta(hours=SLA_HORAS)
+        tiempo_resolucion__gt=timedelta(hours=24)
     ).count()
 
     return render(request, 'tickets/dashboard.html', {
@@ -59,28 +56,6 @@ def dashboard(request):
         'cerrados': cerrados,
         'cumple_sla': cumple_sla,
         'no_cumple': no_cumple,
-    })
-    
-for t in tickets:
-    if t.fecha_cierre:
-        horas = (t.fecha_cierre - t.fecha_creacion).total_seconds() / 3600
-
-        if horas <= 24:
-            cumple_sla += 1
-        else:
-            no_cumple += 1
-
-    total = tickets.count()
-    abiertos = tickets.filter(estado='abierto').count()
-    cerrados = tickets.filter(estado='cerrado').count()
-
-    por_prioridad = tickets.values('prioridad').annotate(total=Count('id'))
-
-    return render(request, 'tickets/dashboard.html', {
-        'total': total,
-        'abiertos': abiertos,
-        'cerrados': cerrados,
-        'por_prioridad': por_prioridad,
     })
 
 def es_admin(user):
