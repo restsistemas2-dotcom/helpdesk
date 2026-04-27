@@ -30,8 +30,9 @@
 
         .total { background: #2a5298; }
         .abiertos { background: #e67e22; }
+		.proceso {background: #17a2b8; }
         .cerrados { background: #27ae60; }
-
+		
         canvas {
             margin-top: 40px;
             background: white;
@@ -56,6 +57,11 @@
             <h3>Abiertos</h3>
             <h1>{{ abiertos }}</h1>
         </div>
+
+		<div class="card proceso">
+			<h3>En Proceso</h3>
+			<p>{{ en_proceso }}</p>
+		</div>
 
         <div class="card cerrados">
             <h3>Cerrados</h3>

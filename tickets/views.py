@@ -29,7 +29,8 @@ def dashboard(request):
     total_tickets = tickets.count()
     abiertos = tickets.filter(estado='abierto').count()
     cerrados = tickets.filter(estado='cerrado').count()
-
+    en_proceso = tickets.filter(estado='en_proceso').count()
+    
     tickets_cerrados = tickets.filter(
         estado='cerrado',
         fecha_cierre__isnull=False
@@ -53,6 +54,7 @@ def dashboard(request):
     return render(request, 'tickets/dashboard.html', {
         'total_tickets': total_tickets,
         'abiertos': abiertos,
+        'en_proceso': en_proceso,
         'cerrados': cerrados,
         'cumple_sla': cumple_sla,
         'no_cumple': no_cumple,

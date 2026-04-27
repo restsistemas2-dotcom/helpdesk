@@ -69,9 +69,23 @@
 
 <div class="top-bar">
     Usuario: {{ request.user.username }}
-	<a href="{% url 'dashboard' %}">Dashboard</a>
+	<a href="{% url 'dashboard' %}" class="btn-dashboard">📊 Dashboard</a>
     <a href="{% url 'logout' %}">Cerrar sesión</a>
 </div>
+	<style>
+	.btn-dashboard {
+		background: #28a745;
+		color: white;
+		padding: 8px 15px;
+		border-radius: 5px;
+		text-decoration: none;
+		margin-left: 10px;
+	}
+
+	.btn-dashboard:hover {
+		background: #218838;
+	
+	</style>
 
 <div class="container">
     <h2>Crear Ticket</h2>

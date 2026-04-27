@@ -41,7 +41,7 @@ class Ticket(models.Model):
 
     ESTADOS = [
         ('abierto', 'Abierto'),
-        ('progreso', 'En Progreso'),
+        ('en_proceso', 'En Progreso'),
         ('cerrado', 'Cerrado'),
     ]
 
