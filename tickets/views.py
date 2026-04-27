@@ -4,8 +4,11 @@ from django.http import HttpResponse
 from .models import Ticket
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import user_passes_test
 
-
+def es_admin(user):
+    return user.is_staff
+    
 @login_required
 def lista_tickets(request):
     perfil = request.user.perfil
@@ -22,8 +25,8 @@ def crear_ticket(request):
         
         categoria_id = request.POST.get('categoria')
         
-        impacto = request.POST.get('impacto').lower()
-        urgencia = request.POST.get('urgencia').lower()
+        impacto = (request.POST.get('impacto') or '').lower()
+        urgencia = (request.POST.get('urgencia') or '').lower()
 
         # Prioridad tipo ITIL
         if impacto == 'alto' and urgencia == 'alta':
