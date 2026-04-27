@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Subcategoria
-from .models import Categoria
+
 
 def es_admin(user):
     return user.is_staff
@@ -26,36 +26,34 @@ def crear_ticket(request):
     
     if request.method == 'POST':
         
-        categoria = Categoria.objects.get(id=request.POST.get('categoria'))
+        categoria_id = request.POST.get('categoria')
         
-        # 🎯 prioridad automática
-        if categoria.nombre.lower() == 'hardware':
-            prioridad = 'P2'
-        elif categoria.nombre.lower() == 'red':
+        impacto = (request.POST.get('impacto') or '').lower()
+        urgencia = (request.POST.get('urgencia') or '').lower()
+
+        # Prioridad tipo ITIL
+        if impacto == 'alto' and urgencia == 'alta':
             prioridad = 'P1'
-        elif categoria.nombre.lower() == 'usuario':
+        elif impacto == 'alto' and urgencia == 'media':
+            prioridad = 'P2'
+        elif impacto == 'medio' and urgencia == 'alta':
+            prioridad = 'P2'
+        elif impacto == 'medio' and urgencia == 'media':
             prioridad = 'P3'
         else:
             prioridad = 'P4'
-
-        impacto = 'alto'
-        urgencia = 'alta'
         
         perfil = request.user.perfil
-
-        # 📎 archivo
-        archivo = request.FILES.get('archivo')
-
+        
         Ticket.objects.create(
             usuario=request.user,
             sede=perfil.sede,
-            categoria=categoria,
+            categoria_id=int(categoria_id),
             subcategoria_id=int(request.POST.get('subcategoria')),
             descripcion=request.POST.get('descripcion'),
             impacto=impacto,
             urgencia=urgencia,
             prioridad=prioridad,
-            archivo=archivo
         )
         
         sede = perfil.sede
@@ -75,11 +73,9 @@ def crear_ticket(request):
         return redirect('lista_tickets')
 
     categorias = Categoria.objects.all()
-    subcategorias = Subcategoria.objects.all()
 
     return render(request, 'tickets/crear.html', {
         'categorias': categorias,
-        'subcategorias': subcategorias
     })
     
     # ESTO ES LO NUEVO

@@ -75,7 +75,7 @@
 <div class="container">
     <h2>Crear Ticket</h2>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <label>Categoría</label>
@@ -90,29 +90,20 @@
 			<option value="">Seleccione una categoría primero</option>
 		</select>
 
-        <label>Impacto</label>
-        <select name="impacto">
-            <option>Alto</option>
-            <option>Medio</option>
-            <option>Bajo</option>
-        </select>
-
-        <label>Urgencia</label>
-        <select name="urgencia">
-            <option>Alta</option>
-            <option>Media</option>
-            <option>Baja</option>
-        </select>
-
         <label>Descripción</label>
         <textarea name="descripcion"></textarea>
 
+		<label>Adjuntar archivo</label>
+		<input type="file" name="archivo">
+		
         <button type="submit">Crear Ticket</button>
     </form>
 </div>
 <script>
 document.getElementById('categoria').addEventListener('change', function () {
     let categoriaId = this.value;
+
+	subcategoriaSelect.innerHTML = '<option>Cargando...</option>';
 
     fetch(`/ajax/subcategorias/?categoria_id=${categoriaId}`)
         .then(response => response.json())

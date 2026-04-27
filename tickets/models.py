@@ -73,6 +73,8 @@ class Ticket(models.Model):
 
     tecnico = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='tickets_asignados')
 
+    archivo = models.FileField(upload_to='tickets/', null=True, blank=True)
+    
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     

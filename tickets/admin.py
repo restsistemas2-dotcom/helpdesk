@@ -26,6 +26,7 @@ class TicketAdmin(admin.ModelAdmin):
         'estado',
         'tecnico',
         'solucion',  # AGREGAR ESTO
+        'archivo',
     )
     def save_model(self, request, obj, form, change):
         if obj.estado == 'cerrado' and not obj.solucion:
