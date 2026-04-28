@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Panel Admin{% endblock %}
+
+{% block nav-global %}
+    {{ block.super }}
+    <div style="padding:10px;">
+        <a href="/dashboard/" 
+           style="background:#2a5298; color:white; padding:8px 12px; border-radius:5px; text-decoration:none;">
+            📊 Ver Dashboard
+        </a>
+    </div>
+{% endblock %}
