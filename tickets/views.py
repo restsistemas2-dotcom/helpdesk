@@ -17,6 +17,21 @@ from datetime import timedelta
 
 from .models import Ticket
 
+@login_required
+def api_tickets(request):
+
+    tickets = Ticket.objects.all().values(
+        'id',
+        'estado',
+        'prioridad',
+        'fecha_creacion',
+        'fecha_cierre',
+        'sede__nombre',
+        'categoria__nombre'
+    )
+
+    return JsonResponse(list(tickets), safe=False)
+    
 def es_admin(user):
     return user.is_staff
 
