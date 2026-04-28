@@ -23,36 +23,37 @@ def es_admin(user):
 @user_passes_test(es_admin)
 def dashboard(request):
     perfil = getattr(request.user, 'perfil', None)
-
-    if not perfil:
-        return redirect('login')
-
-    tickets = Ticket.objects.filter(sede=perfil.sede)
-
+    
+    # 🔐 CONTROL DE ACCESO
+    if request.user.is_staff:
+        tickets = Ticket.objects.all()  # ADMIN ve todo
+    else:
+        if not perfil:
+            return redirect('login')
+        tickets = Ticket.objects.filter(sede=perfil.sede)  # Usuario solo su sede
+    
+    # 📊 KPIs
     total_tickets = tickets.count()
     abiertos = tickets.filter(estado='abierto').count()
-    cerrados = tickets.filter(estado='cerrado').count()
     en_proceso = tickets.filter(estado='en_proceso').count()
+    cerrados = tickets.filter(estado='cerrado').count()
     
-    tickets_cerrados = tickets.filter(
-        estado='cerrado',
-        fecha_cierre__isnull=False
-    )
+    
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # ⏱️ SLA (24 horas)
+    cumple_sla = 0
+    no_cumple = 0
 
-    tickets_con_tiempo = tickets_cerrados.annotate(
-        tiempo_resolucion=ExpressionWrapper(
-            F('fecha_cierre') - F('fecha_creacion'),
-            output_field=DurationField()
-        )
-    )
+    for t in tickets.filter(estado='cerrado'):
+        if t.fecha_cierre and t.fecha_creacion:
+            tiempo = t.fecha_cierre - t.fecha_creacion
 
-    cumple_sla = tickets_con_tiempo.filter(
-        tiempo_resolucion__lte=timedelta(hours=24)
-    ).count()
-
-    no_cumple = tickets_con_tiempo.filter(
-        tiempo_resolucion__gt=timedelta(hours=24)
-    ).count()
+            if tiempo <= timedelta(hours=24):
+                cumple_sla += 1
+            else:
+                no_cumple += 1
 
     return render(request, 'tickets/dashboard.html', {
         'total_tickets': total_tickets,
