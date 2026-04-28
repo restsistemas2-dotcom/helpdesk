@@ -17,7 +17,10 @@ from datetime import timedelta
 
 from .models import Ticket
 
-@login_required
+def es_admin(user):
+    return user.is_staff
+
+@user_passes_test(es_admin)
 def dashboard(request):
     perfil = getattr(request.user, 'perfil', None)
 
