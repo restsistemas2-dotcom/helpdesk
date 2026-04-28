@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
-    path('api/tickets/', views.api_tickets, name='api_tickets'),
+    path('api/tickets/', views.api_tickets),
     path('', auth_views.LoginView.as_view(template_name='tickets/login.html'), name='login'),
     path('tickets/', views.lista_tickets, name='lista_tickets'),
     path('crear/', views.crear_ticket, name='crear_ticket'),
