@@ -20,6 +20,11 @@ from django.conf import settings
 
 from .models import Ticket
 
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
 def api_tickets(request):
     tickets = Ticket.objects.all().values(
         'id',
@@ -129,27 +134,31 @@ def crear_ticket(request):
 
         def enviar_correo():
             try:
-                send_mail(
+                message = Mail(
+                    from_email='Sistema de Tickets <sistemas100mcw@gmail.com>',
+                    to_emails=[
+                        'emontenegro@100montaditosca.com',
+                        sede.correo
+                    ],
                     subject=f'Nuevo Ticket #{ticket.id}',
-                    message=(
+                    plain_text_content=(
                         f'Se ha creado un ticket:\n\n'
                         f'Usuario: {request.user.username}\n'
                         f'Sede: {sede.nombre}\n'
                         f'Descripción: {ticket.descripcion}\n'
                         f'Prioridad: {prioridad}'
-                    ),
-                    from_email=f'Sistema de Tickets <{settings.EMAIL_HOST_USER}>',
-                    recipient_list=[
-                        settings.EMAIL_HOST_USER,
-                        sede.correo
-                    ],
-                    fail_silently=False,
+                    )
                 )
-            except Exception as e:
-                print("ERROR CORREO:", e)
 
-        # 🚀 ejecutar en segundo plano
-        threading.Thread(target=enviar_correo).start()
+                sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                response = sg.send(message)
+
+                print("CORREO ENVIADO:", response.status_code)
+
+            except Exception as e:
+                print("ERROR SENDGRID:", e)
+                
+        threading.Thread(target=enviar_correo).start()        
 
         return redirect('lista_tickets')
 
