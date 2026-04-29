@@ -123,6 +123,21 @@ def crear_ticket(request):
             archivo=archivo
         )
         
+        try:
+            send_mail(
+                'Nuevo Ticket Creado',
+                f'Se ha creado un ticket:\n\n'
+                f'Usuario: {request.user.username}\n'
+                f'Sede: {sede.nombre}\n'
+                f'Descripción: {request.POST.get("descripcion")}\n'
+                f'Prioridad: {prioridad}',
+                'emontenegro@100montaditosca.com',
+                ['emontenegro@100montaditosca.com', sede.correo],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("ERROR CORREO:", e)
+            
         sede = perfil.sede
 
         send_mail(
@@ -134,7 +149,7 @@ def crear_ticket(request):
             f'Prioridad: {prioridad}',
             'emontenegro@100montaditosca.com',
             ['emontenegro@100montaditosca.com', sede.correo],
-            fail_silently=False,
+            fail_silently=True,
         )
 
         return redirect('lista_tickets')
