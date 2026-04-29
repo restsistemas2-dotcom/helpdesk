@@ -6,6 +6,11 @@ from django.core.exceptions import ValidationError
 from django.urls import path
 from django.shortcuts import redirect
 
+def borrar_tickets(modeladmin, request, queryset):
+        Ticket.objects.all().delete()
+
+borrar_tickets.short_description = "🗑 Borrar TODOS los tickets"
+    
 # Guardar el método original
 original_get_urls = admin.site.get_urls
 
@@ -23,6 +28,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ('id', 'usuario', 'sede', 'estado', 'prioridad', 'tecnico')
     list_filter = ('estado', 'prioridad', 'tecnico')
     search_fields = ('descripcion',)
+    
     actions = [borrar_tickets]  # 👈 AGREGAR ESTO
 
     fields = (
@@ -45,10 +51,7 @@ class TicketAdmin(admin.ModelAdmin):
             raise ValidationError("Debes ingresar una solución para cerrar el ticket.")
         super().save_model(request, obj, form, change)
 
-    def borrar_tickets(modeladmin, request, queryset):
-        Ticket.objects.all().delete()
-
-    borrar_tickets.short_description = "🗑 Borrar TODOS los tickets"
+    
 
 # Inline Perfil
 class PerfilInline(admin.StackedInline):
