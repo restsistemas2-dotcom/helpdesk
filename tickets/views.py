@@ -135,7 +135,7 @@ def crear_ticket(request):
         def enviar_correo():
             try:
                 message = Mail(
-                    from_email='Sistema de Tickets <sistemas100mcw@gmail.com>',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
                     to_emails=[
                         'emontenegro@100montaditosca.com',
                         sede.correo
