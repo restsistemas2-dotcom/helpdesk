@@ -138,7 +138,7 @@ def crear_ticket(request):
                         f'Descripción: {ticket.descripcion}\n'
                         f'Prioridad: {prioridad}'
                     ),
-                    from_email=settings.EMAIL_HOST_USER,
+                    from_email=f'Sistema de Tickets <{settings.EMAIL_HOST_USER}>',
                     recipient_list=[
                         settings.EMAIL_HOST_USER,
                         sede.correo
