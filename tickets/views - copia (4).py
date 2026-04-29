@@ -14,7 +14,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, ExpressionWrapper, DurationField
 from datetime import timedelta
-from .models import Ticket, Categoria, Subcategoria
 
 from .models import Ticket
 
@@ -89,11 +88,11 @@ from .models import Ticket, Sede, Categoria, Subcategoria
 
 @login_required
 def crear_ticket(request):
-
+    
     if request.method == 'POST':
-
+        
         categoria = Categoria.objects.get(id=request.POST.get('categoria'))
-
+        
         # 🎯 prioridad automática
         if categoria.nombre.lower() == 'hardware':
             prioridad = 'P2'
@@ -106,16 +105,15 @@ def crear_ticket(request):
 
         impacto = 'alto'
         urgencia = 'alta'
-
+        
         perfil = request.user.perfil
-        sede = perfil.sede  # ✅ DEFINIDO ANTES
 
+        # 📎 archivo
         archivo = request.FILES.get('archivo')
 
-        # ✅ GUARDAR EN VARIABLE
-        ticket = Ticket.objects.create(
+        Ticket.objects.create(
             usuario=request.user,
-            sede=sede,
+            sede=perfil.sede,
             categoria=categoria,
             subcategoria_id=int(request.POST.get('subcategoria')),
             descripcion=request.POST.get('descripcion'),
@@ -124,27 +122,35 @@ def crear_ticket(request):
             prioridad=prioridad,
             archivo=archivo
         )
-
-        # ✅ ENVÍO DE CORREO (UNA SOLA VEZ)
+        
         try:
             send_mail(
-                subject=f'Nuevo Ticket #{ticket.id}',
-                message=(
-                    f'Se ha creado un ticket:\n\n'
-                    f'Usuario: {request.user.username}\n'
-                    f'Sede: {sede.nombre}\n'
-                    f'Descripción: {ticket.descripcion}\n'
-                    f'Prioridad: {prioridad}'
-                ),
-                from_email='emontenegro@100montaditosca.com',
-                recipient_list=[
-                    'emontenegro@100montaditosca.com',
-                    sede.correo
-                ],
+                'Nuevo Ticket Creado',
+                f'Se ha creado un ticket:\n\n'
+                f'Usuario: {request.user.username}\n'
+                f'Sede: {sede.nombre}\n'
+                f'Descripción: {request.POST.get("descripcion")}\n'
+                f'Prioridad: {prioridad}',
+                'emontenegro@100montaditosca.com',
+                ['emontenegro@100montaditosca.com', sede.correo],
                 fail_silently=False,
             )
         except Exception as e:
             print("ERROR CORREO:", e)
+            
+        sede = perfil.sede
+
+        send_mail(
+            'Nuevo Ticket Creado',
+            f'Se ha creado un ticket:\n\n'
+            f'Usuario: {request.user.username}\n'
+            f'🏢 Sede: {sede.nombre}\n'
+            f'Descripción: {request.POST.get("descripcion")}\n'
+            f'Prioridad: {prioridad}',
+            'emontenegro@100montaditosca.com',
+            ['emontenegro@100montaditosca.com', sede.correo],
+            fail_silently=True,
+        )
 
         return redirect('lista_tickets')
 
