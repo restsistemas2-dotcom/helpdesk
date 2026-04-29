@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F, ExpressionWrapper, DurationField
 from datetime import timedelta
 from .models import Ticket, Categoria, Subcategoria
+import threading
+from django.conf import settings
 
 from .models import Ticket
 
@@ -125,26 +127,29 @@ def crear_ticket(request):
             archivo=archivo
         )
 
-        # ✅ ENVÍO DE CORREO (UNA SOLA VEZ)
-        try:
-            send_mail(
-                subject=f'Nuevo Ticket #{ticket.id}',
-                message=(
-                    f'Se ha creado un ticket:\n\n'
-                    f'Usuario: {request.user.username}\n'
-                    f'Sede: {sede.nombre}\n'
-                    f'Descripción: {ticket.descripcion}\n'
-                    f'Prioridad: {prioridad}'
-                ),
-                from_email='emontenegro@100montaditosca.com',
-                recipient_list=[
-                    'emontenegro@100montaditosca.com',
-                    sede.correo
-                ],
-                fail_silently=False,
-            )
-        except Exception as e:
-            print("ERROR CORREO:", e)
+        def enviar_correo():
+            try:
+                send_mail(
+                    subject=f'Nuevo Ticket #{ticket.id}',
+                    message=(
+                        f'Se ha creado un ticket:\n\n'
+                        f'Usuario: {request.user.username}\n'
+                        f'Sede: {sede.nombre}\n'
+                        f'Descripción: {ticket.descripcion}\n'
+                        f'Prioridad: {prioridad}'
+                    ),
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[
+                        settings.EMAIL_HOST_USER,
+                        sede.correo
+                    ],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print("ERROR CORREO:", e)
+
+        # 🚀 ejecutar en segundo plano
+        threading.Thread(target=enviar_correo).start()
 
         return redirect('lista_tickets')
 
