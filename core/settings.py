@@ -148,7 +148,6 @@ SESSION_COOKIE_SECURE = True
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
 CORREO_SOPORTE = "emontenegro@100montaditosca.com"
