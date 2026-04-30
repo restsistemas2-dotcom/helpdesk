@@ -148,18 +148,12 @@ SESSION_COOKIE_SECURE = True
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/'
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-DEFAULT_FROM_EMAIL = "sistemas100mcw@gmail.com"
-
-EMAIL_HOST_USER = 'sistemas100mcw@gmail.com'
-EMAIL_HOST_PASSWORD = 'zgql diqx jjhu ypuf'
-
-EMAIL_TIMEOUT = 10
+DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
+CORREO_SOPORTE = "emontenegro@100montaditosca.com"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-CORREO_SOPORTE = "emontenegro@100montaditosca.com"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
