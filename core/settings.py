@@ -148,7 +148,7 @@ SESSION_COOKIE_SECURE = True
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
 
