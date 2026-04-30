@@ -153,7 +153,5 @@ SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
 CORREO_SOPORTE = "emontenegro@100montaditosca.com"
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
