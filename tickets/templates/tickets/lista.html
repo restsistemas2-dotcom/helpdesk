@@ -36,6 +36,11 @@
                 <td>{{ t.sede.nombre }}</td>
                 <td>{{ t.categoria.nombre }}</td>
                 <td>{{ t.subcategoria.nombre }}</td>
+				<td>
+					<a href="{% url 'cerrar_ticket' ticket.id %}" class="btn btn-danger btn-sm">
+						Cerrar
+					</a>
+				</td>
 
                 <td>
                     {% if t.prioridad == 'P1' %}

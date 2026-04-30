@@ -162,6 +162,53 @@ def crear_ticket(request):
 
         return redirect('lista_tickets')
 
+@login_required
+def cerrar_ticket(request, id):
+    ticket = Ticket.objects.get(id=id)
+
+    if ticket.estado == 'cerrado':
+        return redirect('lista_tickets')
+        
+    # Cambiar estado
+    ticket.estado = 'cerrado'
+    ticket.fecha_cierre = timezone.now()
+    ticket.save()
+
+    def enviar_correo_cierre():
+        try:
+            message = Mail(
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to_emails=[
+                    'emontenegro@100montaditosca.com',
+                    ticket.sede.correo
+                ],
+                subject=f'✅ Ticket #{ticket.id} CERRADO',
+                plain_text_content=(
+                    f'📌 Ticket #{ticket.id} cerrado exitosamente\n\n'
+                    f'👤 Usuario: {ticket.usuario.username}\n'
+                    f'🏢 Sede: {ticket.sede.nombre}\n'
+                    f'🛠️ Descripción: {ticket.descripcion}\n'
+                    f'📅 Fecha cierre: {ticket.fecha_cierre}\n\n'
+                    f'🧾 Solución: Ticket atendido correctamente\n\n'
+                    f'🙏 Gracias por utilizar la mesa de ayuda'
+                )
+            )
+
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+
+            print("CORREO CIERRE:", response.status_code)
+
+        except Exception as e:
+            print("ERROR CIERRE:", e)
+
+    return redirect('lista_tickets')
+    
+    # Enviar en segundo plano
+    threading.Thread(target=enviar_correo_cierre).start()
+
+    return redirect('lista_tickets')
+
     categorias = Categoria.objects.all()
     subcategorias = Subcategoria.objects.all()
 
