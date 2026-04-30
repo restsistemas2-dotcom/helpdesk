@@ -95,4 +95,39 @@ def crear_perfil_usuario(sender, instance, created, **kwargs):
     if created:
         Perfil.objects.create(user=instance)
         
+@receiver(post_save, sender=Ticket)
+def enviar_correo_cierre(sender, instance, created, **kwargs):
+    
+    # solo cuando se actualiza
+    if not created and instance.estado == 'cerrado':
+        
+        # si no tiene fecha, la agregamos SIN usar save()
+        if not instance.fecha_cierre:
+            Ticket.objects.filter(id=instance.id).update(
+                fecha_cierre=timezone.now()
+            )
+            instance.fecha_cierre = timezone.now()
+                  
+            destinatarios = []
+
+            if instance.usuario.email:
+                destinatarios.append(instance.usuario.email)
+
+            if instance.sede.correo:
+                destinatarios.append(instance.sede.correo)
+          
+            if destinatarios:
+                send_mail(
+                    f'Ticket #{instance.id} Cerrado',
+                    f'Hola,\n\n'
+                    f'Tu ticket ha sido cerrado exitosamente.\n\n'
+                    f'🆔 ID: {instance.id}\n'
+                    f'🏢 Sede: {instance.sede.nombre}\n'
+                    f'📅 Fecha de cierre: {instance.fecha_cierre.strftime("%d/%m/%Y %H:%M")}\n\n'
+                    f'🛠️ Solución:\n{instance.solucion or "No especificada"}\n\n'
+                    f'Gracias por utilizar la mesa de ayuda.',
+                    'emontenegro@100montaditosca.com',
+                    destinatarios,
+                    fail_silently=False,
+                )
 # Create your models here.
