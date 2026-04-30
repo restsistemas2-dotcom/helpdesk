@@ -212,7 +212,6 @@ def cerrar_ticket(request, id):
     threading.Thread(target=enviar_correo_cierre).start()
     
     return redirect('lista_tickets')
-    
     })
     
   
