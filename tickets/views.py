@@ -110,6 +110,9 @@ def crear_ticket(request):
         else:
             prioridad = 'P4'
 
+        impacto = 'alto'
+        urgencia = 'alta'
+        
         perfil = request.user.perfil
         sede = perfil.sede  # ✅ DEFINIDO ANTES
 
