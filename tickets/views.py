@@ -136,7 +136,7 @@ def crear_ticket(request):
                 message = Mail(
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to_emails=[
-                        'emontenegro@100montaditosca.com',
+                        'sistemas100mcw@gmail.com',
                         sede.correo
                     ],
                     subject=f'Nuevo Ticket #{ticket.id}',
@@ -186,7 +186,7 @@ def cerrar_ticket(request, id):
             message = Mail(
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to_emails=[
-                    'emontenegro@100montaditosca.com',
+                    'sistemas100mcw@gmail.com',
                     ticket.sede.correo
                 ],
                 subject=f'✅ Ticket #{ticket.id} CERRADO',
