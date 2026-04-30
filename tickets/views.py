@@ -109,9 +109,11 @@ def crear_ticket(request):
             prioridad = 'P3'
         else:
             prioridad = 'P4'
-
+            
+        
         impacto = 'alto'
         urgencia = 'alta'
+        archivo = request.FILES.get('archivo')
         
         perfil = request.user.perfil
         sede = perfil.sede  # ✅ DEFINIDO ANTES
@@ -210,26 +212,10 @@ def cerrar_ticket(request, id):
     threading.Thread(target=enviar_correo_cierre).start()
     
     return redirect('lista_tickets')
-
-    categorias = Categoria.objects.all()
-    subcategorias = Subcategoria.objects.all()
-
-    return render(request, 'tickets/crear.html', {
-        'categorias': categorias,
-        'subcategorias': subcategorias
+    
     })
     
-    # ESTO ES LO NUEVO
-    sedes = Sede.objects.all()
-    categorias = Categoria.objects.all()
-    subcategorias = Subcategoria.objects.all()
-
-    return render(request, 'tickets/crear.html', {
-        'sedes': sedes,
-        'categorias': categorias,
-        'subcategorias': subcategorias
-    })
-
+  
 def crear_admin(request):
     User.objects.filter(username='admin').delete()
     User.objects.create_superuser('admin', 'admin@test.com', 'Admin12345')
