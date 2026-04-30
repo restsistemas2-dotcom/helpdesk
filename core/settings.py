@@ -150,7 +150,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-DEFAULT_FROM_EMAIL = "sistemas100mcw@gmail.com"
+DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
 
 EMAIL_HOST_USER = 'sistemas100mcw@gmail.com'
 EMAIL_HOST_PASSWORD = 'zgql diqx jjhu ypuf'
