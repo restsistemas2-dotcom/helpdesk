@@ -5,6 +5,7 @@ from .models import Ticket
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse
 from .models import Subcategoria
 from .models import Categoria
 from .models import Perfil
@@ -16,52 +17,12 @@ from datetime import timedelta
 from .models import Ticket, Categoria, Subcategoria
 import threading
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 
-def enviar_correo_ticket(ticket, destinatarios, tipo='creado'):
-    try:
-        if tipo == 'creado':
-            subject = f'🎫 Ticket #{ticket.id} creado'
-            mensaje = f'''
-Hola,
 
-Tu ticket ha sido creado correctamente.
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
-🆔 ID: {ticket.id}
-🏢 Sede: {ticket.sede}
-📌 Estado: {ticket.estado}
-
-Gracias por utilizar la mesa de ayuda.
-'''
-        else:
-            subject = f'✅ Ticket #{ticket.id} CERRADO'
-            mensaje = f'''
-Hola,
-
-Tu ticket ha sido cerrado.
-
-🆔 ID: {ticket.id}
-🏢 Sede: {ticket.sede}
-📅 Fecha cierre: {ticket.fecha_cierre}
-
-🛠️ Solución:
-Ticket atendido correctamente.
-
-Gracias por utilizar la mesa de ayuda.
-'''
-
-        send_mail(
-            subject,
-            mensaje,
-            settings.DEFAULT_FROM_EMAIL,
-            destinatarios,
-            fail_silently=False,
-        )
-
-        print("✅ Correo enviado")
-
-    except Exception as e:
-        print("❌ ERROR CORREO:", e)
 
 def api_tickets(request):
     tickets = Ticket.objects.all().values(
@@ -169,20 +130,33 @@ def crear_ticket(request):
             prioridad=prioridad,
             archivo=archivo
         )
-        
-        # 👇 DESTINATARIOS
-        destinatarios = [
-            ticket.sede.correo,
-            'emontenegro@100montaditosca.com'
-        ]
-        destinatarios = [d for d in destinatarios if d]
-        
-        # 👇 THREAD CORRECTO
-        import threading
-        threading.Thread(
-            target=enviar_correo_ticket,
-            args=(ticket, destinatarios, 'creado')
-        ).start()
+
+        def enviar_correo():
+            try:
+                message = Mail(
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to_emails=[
+                        'emontenegro@100montaditosca.com',
+                        sede.correo
+                    ],
+                    subject=f'Nuevo Ticket #{ticket.id}',
+                    plain_text_content=(
+                        f'Se ha creado un ticket:\n\n'
+                        f'Usuario: {request.user.username}\n'
+                        f'Sede: {sede.nombre}\n'
+                        f'Descripción: {ticket.descripcion}\n'
+                        f'Prioridad: {prioridad}'
+                    )
+                )
+
+                sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                response = sg.send(message)
+                print("CORREO ENVIADO:", response.status_code)
+
+            except Exception as e:
+                print("ERROR SENDGRID:", e)
+                
+        threading.Thread(target=enviar_correo).start()        
 
         return redirect('lista_tickets')
 
@@ -197,7 +171,7 @@ def crear_ticket(request):
     
 @login_required
 def cerrar_ticket(request, id):
-    ticket = get_object_or_404(Ticket, id=id)
+    ticket = Ticket.objects.get(id=id)
 
     if ticket.estado == 'cerrado':
         return redirect('lista_tickets')
@@ -207,17 +181,36 @@ def cerrar_ticket(request, id):
     ticket.fecha_cierre = timezone.now()
     ticket.save()
 
-    destinatarios = [
-        ticket.sede.correo,
-        'emontenegro@100montaditosca.com'
-    ]
+    def enviar_correo_cierre():
+        try:
+            message = Mail(
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to_emails=[
+                    'emontenegro@100montaditosca.com',
+                    ticket.sede.correo
+                ],
+                subject=f'✅ Ticket #{ticket.id} CERRADO',
+                plain_text_content=(
+                    f'📌 Ticket #{ticket.id} cerrado exitosamente\n\n'
+                    f'👤 Usuario: {ticket.usuario.username}\n'
+                    f'🏢 Sede: {ticket.sede.nombre}\n'
+                    f'🛠️ Descripción: {ticket.descripcion}\n'
+                    f'📅 Fecha cierre: {ticket.fecha_cierre}\n\n'
+                    f'🧾 Solución: Ticket atendido correctamente\n\n'
+                    f'🙏 Gracias por utilizar la mesa de ayuda'
+                )
+            )
 
-    import threading
-    threading.Thread(
-        target=enviar_correo_ticket,
-        args=(ticket, destinatarios, 'cerrado')
-    ).start()
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            print("CORREO CIERRE:", response.status_code)
 
+        except Exception as e:
+            print("ERROR CIERRE:", e)
+    
+    # Enviar en segundo plano
+    threading.Thread(target=enviar_correo_cierre).start()
+    
     return redirect('lista_tickets')
   
 def crear_admin(request):
