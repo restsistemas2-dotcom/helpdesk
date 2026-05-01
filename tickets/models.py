@@ -86,7 +86,6 @@ class Ticket(models.Model):
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mail
 from django.utils import timezone
 from django.contrib.auth.models import User
 
