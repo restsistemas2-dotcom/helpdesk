@@ -158,5 +158,7 @@ EMAIL_HOST_PASSWORD = 'jgcz jvat gipb khmf'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+EMAIL_TIMEOUT = 20
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
