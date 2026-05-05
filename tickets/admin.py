@@ -101,9 +101,6 @@ Gracias por utilizar la mesa de ayuda.
                 print("❌ ERROR ADMIN:", e)
 
 
-admin.site.register(Ticket, TicketAdmin)
-    
-
 # Inline Perfil
 class PerfilInline(admin.StackedInline):
     model = Perfil
