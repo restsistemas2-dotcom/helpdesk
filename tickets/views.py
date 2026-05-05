@@ -19,6 +19,13 @@ from django.shortcuts import get_object_or_404
 
 def enviar_correo_ticket(ticket, destinatarios, tipo='creado'):
     try:
+        # 🧹 limpiar correos vacíos o None
+        destinatarios = [c for c in destinatarios if c]
+        
+        if not destinatarios:
+            print("⚠️ No hay destinatarios válidos")
+            return
+            
         if tipo == 'creado':
             subject = f'🎫 Ticket #{ticket.id} creado'
             mensaje = f'''
@@ -190,7 +197,6 @@ def crear_ticket(request):
         destinatarios = [d for d in destinatarios if d]
         
         # 👇 THREAD CORRECTO
-        import threading
         threading.Thread(
             target=enviar_correo_ticket,
             args=(ticket, destinatarios, 'creado')

@@ -66,43 +66,18 @@ class TicketAdmin(admin.ModelAdmin):
 
         # 📧 Enviar correo SOLO si se acaba de cerrar
         if cerrado_ahora:
-            try:
-                destinatarios = []
+            destinatarios = [
+                obj.sede.correo,
+                'emontenegro@100montaditosca.com'
+            ]
 
-                if obj.sede.correo:
-                    destinatarios.append(obj.sede.correo)
+            destinatarios = [d for d in destinatarios if d]
 
-                destinatarios.append('emontenegro@100montaditosca.com')
-
-                def enviar():
-                    send_mail(
-                        subject=f'✅ Ticket #{obj.id} CERRADO',
-                        message=f'''
-Hola,
-
-Tu ticket ha sido cerrado.
-
-🆔 ID: {obj.id}
-🏢 Sede: {obj.sede}
-📅 Fecha cierre: {obj.fecha_cierre}
-
-🛠️ Solución:
-{obj.solucion or "Ticket atendido correctamente."}
-
-Gracias por utilizar la mesa de ayuda.
-''',
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=destinatarios,
-                        fail_silently=False,
-                    )
-                    print("✅ Correo enviado desde ADMIN")
-
-                threading.Thread(target=enviar).start()
-
-            except Exception as e:
-                print("❌ ERROR ADMIN:", e)
-
-
+            threading.Thread(
+                target=enviar_correo_ticket,
+                args=(obj, destinatarios, 'cerrado')
+            ).start()
+            
 # Inline Perfil
 class PerfilInline(admin.StackedInline):
     model = Perfil
