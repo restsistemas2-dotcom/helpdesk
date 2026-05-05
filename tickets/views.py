@@ -45,7 +45,7 @@ Tu ticket ha sido cerrado.
 📅 Fecha cierre: {ticket.fecha_cierre}
 
 🛠️ Solución:
-Ticket atendido correctamente.
+{instance.solucion or "Ticket atendido correctamente."}
 
 Gracias por utilizar la mesa de ayuda.
 '''
@@ -198,19 +198,26 @@ def crear_ticket(request):
 @login_required
 def cerrar_ticket(request, id):
     ticket = get_object_or_404(Ticket, id=id)
-
+    
+     # 🔐 SOLO ADMIN
+    if not request.user.is_staff:
+        return redirect('lista_tickets')
+        
     if ticket.estado == 'cerrado':
         return redirect('lista_tickets')
         
     # Cambiar estado
     ticket.estado = 'cerrado'
-    ticket.fecha_cierre = timezone.now()
+    ticket.fecha_cierre.strftime("%d/%m/%Y %H:%M")
     ticket.save()
 
-    destinatarios = [
-        ticket.sede.correo,
-        'emontenegro@100montaditosca.com'
-    ]
+    # 📧 DESTINATARIOS SEGUROS
+    destinatarios = []
+
+    if ticket.sede.correo:
+        destinatarios.append(ticket.sede.correo)
+
+    destinatarios.append('emontenegro@100montaditosca.com')
 
     import threading
     threading.Thread(
