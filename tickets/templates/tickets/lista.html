@@ -61,8 +61,12 @@
 
 				<!-- ✅ NUEVA COLUMNA ACCIONES -->
 				<td>
-					{% if t.id %}
-						<a href="{% url 'cerrar_ticket' t.id %}">Cerrar</a>
+					{% if user.is_staff %}
+						{% if t.id %}
+							<a href="/cerrar_ticket/{{ t.id }}/" class="btn btn-sm btn-danger">
+								Cerrar
+							</a>
+						{% endif %}
 					{% endif %}
 				</td>
 
