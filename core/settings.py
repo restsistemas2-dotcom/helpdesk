@@ -153,8 +153,8 @@ EMAIL_HOST = 'smtp.office365.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'emontenegro@100montaditosca.com'
-EMAIL_HOST_PASSWORD = '50LyXW2uJ2'
+EMAIL_HOST_USER = os.environ.get("emontenegro@100montaditosca.com")
+EMAIL_HOST_PASSWORD = os.environ.get("50LyXW2uJ2")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
