@@ -93,5 +93,37 @@ from django.contrib.auth.models import User
 def crear_perfil_usuario(sender, instance, created, **kwargs):
     if created:
         Perfil.objects.create(user=instance)
-        
+
+@receiver(post_save, sender=Ticket)
+def notificar_cierre(sender, instance, created, **kwargs):
+    if not created and instance.estado == 'cerrado':
+        try:
+            send_mail(
+                subject=f'✅ Ticket #{instance.id} CERRADO',
+                message=f'''
+Hola,
+
+Tu ticket ha sido cerrado.
+
+🆔 ID: {instance.id}
+🏢 Sede: {instance.sede}
+📅 Fecha cierre: {instance.fecha_cierre}
+
+🛠️ Solución:
+{instance.solucion or "Ticket atendido correctamente."}
+
+Gracias por utilizar la mesa de ayuda.
+''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[
+                    instance.sede.correo,
+                    'emontenegro@100montaditosca.com'
+                ],
+                fail_silently=False,
+            )
+
+            print("✅ Correo cierre enviado (MODEL)")
+
+        except Exception as e:
+            print("❌ ERROR CIERRE MODEL:", e)        
 # Create your models here.
