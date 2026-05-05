@@ -5,7 +5,7 @@ from .models import Perfil, Sede, Categoria, Subcategoria, Ticket
 from django.core.exceptions import ValidationError
 from django.urls import path
 from django.shortcuts import redirect
-from .models import Ticket.
+from .models import Ticket
 import threading
 from django.conf import settings
 from django.core.mail import send_mail
