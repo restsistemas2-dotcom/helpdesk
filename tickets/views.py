@@ -12,7 +12,6 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, ExpressionWrapper, DurationField
-from datetime import timedelta
 from .models import Ticket, Categoria, Subcategoria
 import threading
 from django.conf import settings
@@ -104,7 +103,9 @@ def dashboard(request):
     cumple_sla = 0
     no_cumple = 0
 
-    for t in tickets.filter(estado='cerrado'):
+    cerrados_qs = tickets.filter(estado='cerrado')
+    
+    for t in cerrados_qs:
         if t.fecha_cierre and t.fecha_creacion:
             tiempo = t.fecha_cierre - t.fecha_creacion
 
@@ -113,13 +114,24 @@ def dashboard(request):
             else:
                 no_cumple += 1
 
+    # 📊 AGRUPACIÓN POR PRIORIDAD (esto te faltaba)
+    por_prioridad = tickets.values('prioridad').annotate(total=Count('id'))
+
+    # 🧪 DEBUG (esto sí va fuera del render)
+    print("TOTAL:", total_tickets)
+    print("CERRADOS:", cerrados)
+    print("SLA OK:", cumple_sla)
+    print("SLA FAIL:", no_cumple)
+
     return render(request, 'tickets/dashboard.html', {
+        'total': total_tickets,
         'total_tickets': total_tickets,
         'abiertos': abiertos,
         'en_proceso': en_proceso,
         'cerrados': cerrados,
         'cumple_sla': cumple_sla,
         'no_cumple': no_cumple,
+        'por_prioridad': por_prioridad
     })
         
 @login_required
