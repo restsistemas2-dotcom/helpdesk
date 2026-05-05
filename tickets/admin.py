@@ -11,9 +11,11 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 def borrar_tickets(modeladmin, request, queryset):
-        Ticket.objects.all().delete()
+    cantidad = queryset.count()
+    queryset.delete()
+    modeladmin.message_user(request, f"🗑 {cantidad} ticket(s) eliminado(s) correctamente.")
 
-borrar_tickets.short_description = "🗑 Borrar TODOS los tickets"
+borrar_tickets.short_description = "🗑 Borrar los tickets seleccionados"
     
 # Guardar el método original
 original_get_urls = admin.site.get_urls
