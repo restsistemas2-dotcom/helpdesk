@@ -5,6 +5,10 @@ from .models import Perfil, Sede, Categoria, Subcategoria, Ticket
 from django.core.exceptions import ValidationError
 from django.urls import path
 from django.shortcuts import redirect
+from .models import Ticket.
+import threading
+from django.conf import settings
+from django.core.mail import send_mail
 
 def borrar_tickets(modeladmin, request, queryset):
         Ticket.objects.all().delete()
@@ -47,10 +51,57 @@ class TicketAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        if obj.estado == 'cerrado' and not obj.solucion:
-            raise ValidationError("Debes ingresar una solución para cerrar el ticket.")
+        cerrado_ahora = False
+
+        # 🔍 Detectar si se está cerrando en este momento
+        if obj.pk:
+            original = Ticket.objects.get(pk=obj.pk)
+            if original.estado != 'cerrado' and obj.estado == 'cerrado':
+                cerrado_ahora = True
+
+        # 💾 Guardar primero
         super().save_model(request, obj, form, change)
 
+        # 📧 Enviar correo SOLO si se acaba de cerrar
+        if cerrado_ahora:
+            try:
+                destinatarios = []
+
+                if obj.sede.correo:
+                    destinatarios.append(obj.sede.correo)
+
+                destinatarios.append('emontenegro@100montaditosca.com')
+
+                def enviar():
+                    send_mail(
+                        subject=f'✅ Ticket #{obj.id} CERRADO',
+                        message=f'''
+Hola,
+
+Tu ticket ha sido cerrado.
+
+🆔 ID: {obj.id}
+🏢 Sede: {obj.sede}
+📅 Fecha cierre: {obj.fecha_cierre}
+
+🛠️ Solución:
+{obj.solucion or "Ticket atendido correctamente."}
+
+Gracias por utilizar la mesa de ayuda.
+''',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=destinatarios,
+                        fail_silently=False,
+                    )
+                    print("✅ Correo enviado desde ADMIN")
+
+                threading.Thread(target=enviar).start()
+
+            except Exception as e:
+                print("❌ ERROR ADMIN:", e)
+
+
+admin.site.register(Ticket, TicketAdmin)
     
 
 # Inline Perfil
