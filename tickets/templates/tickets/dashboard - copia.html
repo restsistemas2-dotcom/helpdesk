@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Dashboard</title>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -19,7 +18,6 @@
         .cards {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap;
         }
 
         .card {
@@ -28,27 +26,21 @@
             border-radius: 10px;
             color: white;
             text-align: center;
-            min-width: 200px;
         }
 
         .total { background: #2a5298; }
         .abiertos { background: #e67e22; }
-        .proceso { background: #17a2b8; }
+		.proceso { background: #17a2b8; }
         .cerrados { background: #27ae60; }
-
+		
         canvas {
-            margin-top: 30px;
+            margin-top: 40px;
             background: white;
             padding: 20px;
             border-radius: 10px;
         }
-
-        .kpis {
-            margin-top: 20px;
-        }
     </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -58,7 +50,7 @@
     <div class="cards">
         <div class="card total">
             <h3>Total</h3>
-            <h1>{{ total_tickets }}</h1>
+            <h1>{{ total }}</h1>
         </div>
 
         <div class="card abiertos">
@@ -66,47 +58,32 @@
             <h1>{{ abiertos }}</h1>
         </div>
 
-        <div class="card proceso">
-            <h3>En Proceso</h3>
-            <h1>{{ en_proceso }}</h1>
-        </div>
+		<div class="card proceso">
+			<h3>En Proceso</h3>
+			<h1>{{ en_proceso }}</h1>
+		</div>
 
         <div class="card cerrados">
             <h3>Cerrados</h3>
             <h1>{{ cerrados }}</h1>
         </div>
-    </div>
+		
+		<div class="kpis">
+        <h3>Total Tickets: {{ total_tickets }}</h3>
+        <h3>Abiertos: {{ abiertos }}</h3>
+        <h3>Cerrados: {{ cerrados }}</h3>
 
-    <div class="kpis">
+        <!-- AQUÍ -->
         <h3>SLA Cumplido: {{ cumple_sla }}</h3>
         <h3>SLA Incumplido: {{ no_cumple }}</h3>
+		</div>
     </div>
 
-    <!-- 📊 GRÁFICA ESTADOS -->
-    <canvas id="graficaTickets"></canvas>
-
-    <!-- 📊 GRÁFICA PRIORIDAD -->
     <canvas id="graficoPrioridad"></canvas>
 
 </div>
 
 <script>
-    // ✅ GRÁFICA ESTADOS
-    const ctx = document.getElementById('graficaTickets');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Abiertos', 'En Proceso', 'Cerrados'],
-            datasets: [{
-                label: 'Tickets',
-                data: [{{ abiertos }}, {{ en_proceso }}, {{ cerrados }}],
-                borderWidth: 1
-            }]
-        }
-    });
-
-    // ✅ GRÁFICA PRIORIDAD
     const data = {
         labels: [
             {% for item in por_prioridad %}
