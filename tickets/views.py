@@ -17,6 +17,8 @@ import threading
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 import re
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 def correo_valido(correo):
     if not correo:
@@ -200,14 +202,29 @@ def crear_ticket(request):
             archivo=archivo
         )
         
-        # 👇 DESTINATARIOS
+        # 👇 DESTINATARIOS LIMPIOS
         destinatarios = [
             ticket.sede.correo,
             'emontenegro@100montaditosca.com'
         ]
-        
-        # 🚫 SIN THREAD (PRUEBA)
-        enviar_correo_ticket(ticket, destinatarios, 'creado')
+
+        # 🔥 LIMPIEZA + VALIDACIÓN
+        destinatarios_validos = []
+
+        for correo in destinatarios:
+            if correo:
+                correo = correo.strip()
+                try:
+                    validate_email(correo)
+                    destinatarios_validos.append(correo)
+                except ValidationError:
+                    print(f"❌ Correo inválido ignorado: {correo}")
+
+        # 🚀 ENVÍO
+        if destinatarios_validos:
+            enviar_correo_ticket(ticket, destinatarios_validos, 'creado')
+        else:
+            print("❌ No hay correos válidos")
         
         return redirect('lista_tickets')
 
