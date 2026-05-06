@@ -194,13 +194,10 @@ def crear_ticket(request):
             ticket.sede.correo,
             'emontenegro@100montaditosca.com'
         ]
+        
         destinatarios = [d for d in destinatarios if d]
         
-        # 👇 THREAD CORRECTO
-        threading.Thread(
-            target=enviar_correo_ticket,
-            args=(ticket, destinatarios, 'creado')
-        ).start()
+        enviar_correo_ticket(ticket, destinatarios, 'creado')
 
         return redirect('lista_tickets')
 
