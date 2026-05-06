@@ -74,7 +74,7 @@ Gracias por utilizar la mesa de ayuda.
             mensaje,
             settings.DEFAULT_FROM_EMAIL,
             destinatarios,
-            fail_silently=False,
+            fail_silently=True,
         )
 
         print("✅ Correo enviado a:", destinatarios)

@@ -10,7 +10,7 @@ import re
 class Sede(models.Model):
     nombre = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=150, blank=True)
-    correo = models.EmailField(blank=True, null=True)
+    correo = models.EmailField(blank=False, null=False)
     
     def clean(self):
         if self.correo:
