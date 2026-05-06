@@ -206,8 +206,10 @@ def crear_ticket(request):
             'emontenegro@100montaditosca.com'
         ]
         
-        # 🚫 SIN THREAD (PRUEBA)
-        enviar_correo_ticket(ticket, destinatarios, 'creado')
+        threading.Thread(
+            target=enviar_correo_ticket,
+            args=(ticket, destinatarios, 'creado')
+        ).start()
         
         return redirect('lista_tickets')
 
