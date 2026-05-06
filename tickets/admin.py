@@ -71,8 +71,6 @@ class TicketAdmin(admin.ModelAdmin):
                 'emontenegro@100montaditosca.com'
             ]
 
-            destinatarios = [d for d in destinatarios if d]
-
             threading.Thread(
                 target=enviar_correo_ticket,
                 args=(obj, destinatarios, 'cerrado')

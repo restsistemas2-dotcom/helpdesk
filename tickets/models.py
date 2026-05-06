@@ -3,19 +3,25 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.validators import EmailValidator
-
+from django.core.exceptions import ValidationError
+import re
   
 # Sedes
 class Sede(models.Model):
     nombre = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=150, blank=True)
+    correo = models.EmailField(blank=True, null=True)
     
-    correo = models.EmailField(
-        blank=True,
-        null=True,
-        validators=[EmailValidator(message="Ingrese un correo válido")]
-    )
+    def clean(self):
+        if self.correo:
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", self.correo.strip()):
+                raise ValidationError("Correo inválido en la sede")
 
+    def save(self, *args, **kwargs):
+        if self.correo:
+            self.correo = self.correo.strip()
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.nombre
 

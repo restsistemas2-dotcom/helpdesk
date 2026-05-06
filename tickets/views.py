@@ -16,16 +16,27 @@ from .models import Ticket, Categoria, Subcategoria
 import threading
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+import re
+
+def correo_valido(correo):
+    if not correo:
+        return False
+    correo = correo.strip()
+    return re.match(r"[^@]+@[^@]+\.[^@]+", correo)
+
 
 def enviar_correo_ticket(ticket, destinatarios, tipo='creado'):
     try:
-        # 🧹 limpiar correos vacíos o None
-        destinatarios = [c for c in destinatarios if c]
-        
+        # 🔥 LIMPIEZA PRO
+        destinatarios = [
+            c.strip() for c in destinatarios
+            if c and correo_valido(c)
+        ]
+
         if not destinatarios:
             print("⚠️ No hay destinatarios válidos")
             return
-            
+
         if tipo == 'creado':
             subject = f'🎫 Ticket #{ticket.id} creado'
             mensaje = f'''
@@ -51,7 +62,7 @@ Tu ticket ha sido cerrado.
 📅 Fecha cierre: {ticket.fecha_cierre}
 
 🛠️ Solución:
-{instance.solucion or "Ticket atendido correctamente."}
+{ticket.solucion or "Ticket atendido correctamente."}
 
 Gracias por utilizar la mesa de ayuda.
 '''
@@ -64,7 +75,7 @@ Gracias por utilizar la mesa de ayuda.
             fail_silently=False,
         )
 
-        print("✅ Correo enviado")
+        print("✅ Correo enviado a:", destinatarios)
 
     except Exception as e:
         print("❌ ERROR CORREO:", e)
@@ -195,10 +206,11 @@ def crear_ticket(request):
             'emontenegro@100montaditosca.com'
         ]
         
-        destinatarios = [d for d in destinatarios if d]
+        threading.Thread(
+            target=enviar_correo_ticket,
+            args=(ticket, destinatarios, 'creado')
+        ).start()
         
-        enviar_correo_ticket(ticket, destinatarios, 'creado')
-
         return redirect('lista_tickets')
 
 # ✅ IMPORTANTE: respuesta GET
