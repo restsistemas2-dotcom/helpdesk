@@ -9,6 +9,8 @@ from .models import Ticket
 import threading
 from django.conf import settings
 from django.core.mail import send_mail
+from .views import enviar_correo_ticket
+from .utils import enviar_correo_ticket
 
 def borrar_tickets(modeladmin, request, queryset):
     cantidad = queryset.count()

@@ -19,6 +19,7 @@ from django.shortcuts import get_object_or_404
 import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from .utils import enviar_correo_ticket
 
 def correo_valido(correo):
     if not correo:
@@ -219,6 +220,9 @@ def crear_ticket(request):
                     destinatarios_validos.append(correo)
                 except ValidationError:
                     print(f"❌ Correo inválido ignorado: {correo}")
+
+        # 🚀 ELIMINAR DUPLICADOS
+        destinatarios_validos = list(set(destinatarios_validos))
 
         # 🚀 ENVÍO
         if destinatarios_validos:
