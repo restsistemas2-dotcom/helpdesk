@@ -129,7 +129,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -148,17 +148,12 @@ SESSION_COOKIE_SECURE = True
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_USE_TLS = False
-EMAIL_PORT = 587
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-EMAIL_USE_TLS = True
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("50LyXW2uJ2")
+DEFAULT_FROM_EMAIL = "emontenegro@100montaditosca.com"
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 EMAIL_TIMEOUT = 30
 
