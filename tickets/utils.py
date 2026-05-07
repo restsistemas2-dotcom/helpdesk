@@ -41,11 +41,15 @@ Hola,
 
 Se ha creado un nuevo ticket.
 
-ID: {ticket.id}
-Sede: {ticket.sede}
-
-Descripción:
+━━━━━━━━━━━━━━━━━━
+🎫 Ticket: #{ticket.id}
+🏢 Sede: {ticket.sede}
+📂 Categoría: {ticket.categoria}
+📝 Descripción:
 {ticket.descripcion}
+━━━━━━━━━━━━━━━━━━
+
+Departamento IT
 '''
 
         elif tipo == 'cerrado':
@@ -57,12 +61,18 @@ Hola,
 
 Tu ticket ha sido cerrado.
 
-ID: {ticket.id}
-Sede: {ticket.sede}
-Fecha cierre: {ticket.fecha_cierre}
+━━━━━━━━━━━━━━━━━━
+🎫 Ticket: #{ticket.id}
+🏢 Sede: {ticket.sede}
+📅 Fecha cierre: {ticket.fecha_cierre.strftime("%d/%m/%Y %I:%M %p")}
+━━━━━━━━━━━━━━━━━━
 
-Solución:
+
+🛠️ Solución:
 {ticket.solucion or "Ticket atendido correctamente."}
+
+Gracias.
+Departamento IT
 '''
 
         else:

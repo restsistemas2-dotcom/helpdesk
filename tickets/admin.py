@@ -9,8 +9,8 @@ from .models import Ticket
 import threading
 from django.conf import settings
 from django.core.mail import send_mail
-from .views import enviar_correo_ticket
 from .utils import enviar_correo_ticket
+from django.utils import timezone
 
 def borrar_tickets(modeladmin, request, queryset):
     cantidad = queryset.count()
@@ -55,28 +55,32 @@ class TicketAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        cerrado_ahora = False
+    cerrado_ahora = False
 
-        # 🔍 Detectar si se está cerrando en este momento
-        if obj.pk:
-            original = Ticket.objects.get(pk=obj.pk)
-            if original.estado != 'cerrado' and obj.estado == 'cerrado':
-                cerrado_ahora = True
+    # 🔍 Detectar si se está cerrando en este momento
+    if obj.pk:
+        original = Ticket.objects.get(pk=obj.pk)
 
-        # 💾 Guardar primero
-        super().save_model(request, obj, form, change)
+        if original.estado != 'cerrado' and obj.estado == 'cerrado':
+            cerrado_ahora = True
 
-        # 📧 Enviar correo SOLO si se acaba de cerrar
-        if cerrado_ahora:
-            destinatarios = [
-                obj.sede.correo,
-                'emontenegro@100montaditosca.com'
-            ]
+            # 📅 GUARDAR FECHA DE CIERRE
+            obj.fecha_cierre = timezone.now()
 
-            threading.Thread(
-                target=enviar_correo_ticket,
-                args=(obj, destinatarios, 'cerrado')
-            ).start()
+    # 💾 Guardar ticket
+    super().save_model(request, obj, form, change)
+
+    # 📧 Enviar correo SOLO si se acaba de cerrar
+    if cerrado_ahora:
+        destinatarios = [
+            obj.sede.correo,
+            'emontenegro@100montaditosca.com'
+        ]
+
+        threading.Thread(
+            target=enviar_correo_ticket,
+            args=(obj, destinatarios, 'cerrado')
+        ).start()
             
 # Inline Perfil
 class PerfilInline(admin.StackedInline):
