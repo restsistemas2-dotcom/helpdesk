@@ -31,7 +31,10 @@ Solución:
 '''
         else:
             return
-
+        
+        print("FROM:", settings.DEFAULT_FROM_EMAIL)
+        print("DESTINATARIOS:", destinatarios)
+        
         send_mail(
             subject,
             message,
