@@ -55,32 +55,32 @@ class TicketAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-    cerrado_ahora = False
+        cerrado_ahora = False
 
-    # 🔍 Detectar si se está cerrando en este momento
-    if obj.pk:
-        original = Ticket.objects.get(pk=obj.pk)
+        # 🔍 Detectar si se está cerrando en este momento
+        if obj.pk:
+            original = Ticket.objects.get(pk=obj.pk)
 
-        if original.estado != 'cerrado' and obj.estado == 'cerrado':
-            cerrado_ahora = True
+            if original.estado != 'cerrado' and obj.estado == 'cerrado':
+                cerrado_ahora = True
 
-            # 📅 GUARDAR FECHA DE CIERRE
-            obj.fecha_cierre = timezone.now()
+                # 📅 GUARDAR FECHA DE CIERRE
+                obj.fecha_cierre = timezone.now()
 
-    # 💾 Guardar ticket
-    super().save_model(request, obj, form, change)
+        # 💾 Guardar ticket
+        super().save_model(request, obj, form, change)
 
-    # 📧 Enviar correo SOLO si se acaba de cerrar
-    if cerrado_ahora:
-        destinatarios = [
-            obj.sede.correo,
-            'emontenegro@100montaditosca.com'
-        ]
+        # 📧 Enviar correo SOLO si se acaba de cerrar
+        if cerrado_ahora:
+            destinatarios = [
+                obj.sede.correo,
+                'emontenegro@100montaditosca.com'
+            ]
 
-        threading.Thread(
-            target=enviar_correo_ticket,
-            args=(obj, destinatarios, 'cerrado')
-        ).start()
+            threading.Thread(
+                target=enviar_correo_ticket,
+                args=(obj, destinatarios, 'cerrado')
+            ).start()
             
 # Inline Perfil
 class PerfilInline(admin.StackedInline):
